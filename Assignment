@@ -1,0 +1,18 @@
+DataFile = open(r'C:\Users\andre\Desktop\ml-100k\u.data', 'r')
+data = pd.read_table(DataFile, header=None)
+data.columns = ['user id', 'item id', 'rating', 'timestamp']
+
+UserFile = open(r'C:\Users\andre\Desktop\ml-100k\u.user', 'r')
+user = pd.read_table(UserFile, header=None)
+list1 = []
+for i in range(len(user.values)):
+	names = user.values[i][0].split('|')
+	list1.append(names)
+user = pd.DataFrame(list1)
+user.columns = ['user id', 'age', 'gender', 'occupation', 'ip code']
+user['user id'] = pd.to_numeric(user['user id'], errors='coerce')
+
+avgrating = pd.pivot_table(data, values='rating', index='user id', aggfunc='mean')
+new = pd.merge(avgrating, user, how='inner', on='user id')
+std = pd.pivot_table(new, values='rating', index='gender', aggfunc='std')
+print(std)
